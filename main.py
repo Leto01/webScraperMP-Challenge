@@ -62,8 +62,6 @@ priceOfItemTag = ['span', 'product-price-amount']
 nadelStaerkeTagString = ['td', 'Nadelstärke']
 ZusammenstellungTagString = ['td', 'Zusammenstellung']
 
-htmlOfSearchItem = []
-
 wollplatz = WebPageScraper(searchItems, searchLinkWollplatz)
 
 existingItemList = wollplatz.getFoundItems()
