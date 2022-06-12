@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 import simplejson as json
+import re
 
 # export later into external file
 searchLinkWollplatz = 'https://www.wollplatz.de/{}'
@@ -22,10 +23,17 @@ class WebPageScraper:
     #searches website for pages and saves those with an status_code = 200 to the responseList
     def search(self):
         for item in self.searchItems:
+            if re.search("http?://*", self.searchLink) == False: return
             temp = requests.get(self.searchLink.format(item))
             if temp.status_code == 200:
                 self.responseList.append(temp)
                 self.foundOutOfItemList.append(item)
+
+    def setSearchLink(self, li):
+        self.searchLink = li;
+
+    def setSearchItems(self, itemList):
+        self.searchItems = itemList;
 
     #returns list of "search-words" to which a page was found
     def getFoundItems(self):

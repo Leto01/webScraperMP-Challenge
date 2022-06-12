@@ -24,3 +24,12 @@ class TestInit(TestWebPageScraper):
 
     def test_no_params_in_scrapeForClass(self):
         self.assertEqual(self.webPageScraper.scrapeForClass(), [])
+
+    def test_empty_item_list(self):
+        self.webPageScraper = WebPageScraper([], link)
+        self.assertEqual(self.webPageScraper.getFoundItems(), [])
+
+    def test_empty_link_string(self):
+        #fails
+        self.webPageScraper = WebPageScraper(searchItems, '')
+        self.assertEqual(self.webPageScraper.search(), None)
