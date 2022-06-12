@@ -32,7 +32,7 @@ class WebPageScraper:
         return self.foundOutOfItemList
 
     #finds the String given and returns the element-info after found element
-    def scrapeInTable(self, tag, text):
+    def scrapeInTable(self, tag= None, text= None):
         if tag == None or text == None: return []
         found = []
         for item in self.responseList:
@@ -44,7 +44,7 @@ class WebPageScraper:
         return found
 
     #scrapes for tag-class combination
-    def scrapeForClass(self, tag, wantedItem):
+    def scrapeForClass(self, tag= None, wantedItem= None):
         if tag == None or wantedItem == None: return []
         found = []
         for item in self.responseList:
