@@ -2,9 +2,8 @@ from bs4 import BeautifulSoup
 import requests
 import simplejson as json
 
-
-# export later into csv or .env files
-searchLinkWollplatz = 'https://www.wollplatz.de/{}'  # add searchItem into the q-list with .format('itemString')
+# export later into external file
+searchLinkWollplatz = 'https://www.wollplatz.de/{}'
 searchItems = ['DMC-Natura-XL',
                'Drops-Safran',
                'Drops-Baby-Merino-Mix',
@@ -13,13 +12,14 @@ searchItems = ['DMC-Natura-XL',
                ]
 
 class WebPageScraper:
-    def __init__(self, itemList, searchLink):
-        self.searchLink = searchLink  # add searchItem into the q-list with .format('itemString')
+    def __init__(self, itemList, searchLink): #searchlink needs '{}' in position of the search-word
+        self.searchLink = searchLink
         self.searchItems = itemList
         self.responseList = []
         self.foundOutOfItemList = []
         self.search()
 
+    #searches website for pages and saves those with an status_code = 200 to the responseList
     def search(self):
         for item in self.searchItems:
             temp = requests.get(self.searchLink.format(item))
@@ -27,11 +27,12 @@ class WebPageScraper:
                 self.responseList.append(temp)
                 self.foundOutOfItemList.append(item)
 
+    #returns list of "search-words" to which a page was found
     def getFoundItems(self):
         return self.foundOutOfItemList
 
     #finds the String given and returns the element-info after found element
-    def scrapInTable(self, tag, text):
+    def scrapeInTable(self, tag, text):
         if tag == None or text == None: return []
         found = []
         for item in self.responseList:
@@ -42,8 +43,8 @@ class WebPageScraper:
                 found.append(i)
         return found
 
-    #scraps for tag-class combination
-    def scrapForClass(self, tag, wantedItem):
+    #scrapes for tag-class combination
+    def scrapeForClass(self, tag, wantedItem):
         if tag == None or wantedItem == None: return []
         found = []
         for item in self.responseList:
@@ -54,22 +55,33 @@ class WebPageScraper:
                 found.append(i)
         return found
 
+
+#Test code:
+
 #[tag, class]
 lieferzeitTag =['span', ['stock-green', 'stock-orange', 'stock-red']]
 priceOfItemTag = ['span', 'product-price-amount']
+
+#[tag, text]
 nadelStaerkeTagString = ['td', 'Nadelstärke']
 ZusammenstellungTagString = ['td', 'Zusammenstellung']
 
+
+
+#create Object of scrape
 wollplatz = WebPageScraper(searchItems, searchLinkWollplatz)
 
+
 existingItemList = wollplatz.getFoundItems()
-priceList = wollplatz.scrapForClass(priceOfItemTag[0], priceOfItemTag[1])
-lieferbarkeit = wollplatz.scrapForClass(lieferzeitTag[0], lieferzeitTag[1])
-Nadelstaerken = wollplatz.scrapInTable(nadelStaerkeTagString[0], nadelStaerkeTagString[1])
-Zusammenstellung = wollplatz.scrapInTable(ZusammenstellungTagString[0], ZusammenstellungTagString[1])
 
+#saving params of found items into lists
+priceList = wollplatz.scrapeForClass(priceOfItemTag[0], priceOfItemTag[1])
+lieferbarkeit = wollplatz.scrapeForClass(lieferzeitTag[0], lieferzeitTag[1])
+Nadelstaerken = wollplatz.scrapeInTable(nadelStaerkeTagString[0], nadelStaerkeTagString[1])
+Zusammenstellung = wollplatz.scrapeInTable(ZusammenstellungTagString[0], ZusammenstellungTagString[1])
+
+#building the json string:
 FinalJSONString = '{"Wollplatz": [';
-
 i = 0;
 while i < len(existingItemList):
     obj = {
@@ -83,10 +95,7 @@ while i < len(existingItemList):
     i += 1
 FinalJSONString += ']}'
 
+#writing jsonString into File, overwrite if there is content in the file, creates file if it is not found.
 jFile = open('data.json', 'w')
 jFile.write(FinalJSONString)
 jFile.close();
-
-
-
-#3 Stunden 20 minuten
