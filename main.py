@@ -1,5 +1,3 @@
-# project start time 9.35 am
-# break 10m
 from bs4 import BeautifulSoup
 import requests
 import simplejson as json
